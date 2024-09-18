@@ -1,16 +1,22 @@
-# Workshop #2: References, Dynamic Memory, Function Overloading
-* Version 0.9
+# Workshop #3: Member Functions and Privacy
+* version 1.1  
+   * Part 1 // (v1.1) minor fixed applied
+   * Part 2 
+ 
 
-In this workshop, you will use File scope variables, Reuse your previously developed modules and overload functions, Dynamically allocate, reallocate (resize) and deallocate (free) memory.
+In this workshop, you will use member functions, privacy, safe empty state and formatting the output to complete your work.
 
 ## Learning Outcomes
 
-Upon successful completion of this workshop, you will have demonstrated the abilities to:
+Upon successful completion of this workshop, you will have demonstrated the abilities:
 
-- Overload functions.
-- Dynamic Memory Allocation and Management
-- Use References to pass back information through arguments of a function.
-- Use default value for arguments of a function.
+- to define a class type
+- to privatize data within the class type
+- to instantiate objects of class type
+- to use member functions to query the state of an object
+- to use member functions to change the state of an object
+- to use standard library facilities to format data inserted into the output stream
+- to describe to your instructor what you have learned in completing this workshop
 
 ## Submission Policy
 
@@ -49,6 +55,7 @@ If the file contains work that is not yours (you found it online or somebody pro
 
 If you have helped someone with your code. Let them know of these regulations and in your 'reflect.txt' of part 2 (DIY), write exactly which part of your code was copied and who was the recipient of this code.<br />By doing this you will be clear of any wrongdoing if the recipient of the code does not honour these regulations.
 
+
 ## Compiling and Testing Your Program
 
 All your code should be compiled using this command on `matrix`:
@@ -72,252 +79,172 @@ To check the output, use a program that can compare text files.  Search online f
 
 > Note: All the code written in workshops and the project must be implemented in the **sdds** namespace.
 
-# Part 1 - LAB (50%)
+# Part 1 (50%) The Train Class
 
-Land borders need to keep track of the Cars passing through when they come into the country. In this workshop we will use the concepts learnt this week to develop a small application that receives information about passing cars and keeps them in memory and then prints a report of their information at the end.
+Code a Train class that holds the information for a Train. The class must have private data members to include the following information:
+a) the name of a train,
+b) the number of people on a train, and
+e) the speed of a train (km/hour).
 
-## Reusing code
-Copy the cStrTools module from the previous lab and add it to this project.
+Declare three C++ constants, namely MAX_NAME_LEN, MAX_PEOPLE and MAX_SPEED. Set MAX_NAME_LEN to 20, MAX_PEOPLE to 1000 and MAX_SPEED to 320.
 
-### cString Data entry
-In this lab, we need to receive cStrings from the console that contain spaces. To do so we need to know the features of the **cin** object which is not covered yet. Therefore the following function is provided to you to do what we need for now, until we learn how to work with the **cin** object. 
+Declare three private data members. Declare an array to hold th e name of a train, not exceeding MAX_NAME_LEN characters. Declare an integer variable for the number of people on a train. Declare a double variable for the speed of a train.
 
-Add the following function to your cStrTools module (code in cpp file and prototype in the header file):
+Store your class definition in a header file named Train.h and your member function definitions in an implementation file named Train.cpp.
 
-```C++
-   // reads a cString upto maxSize characters or upto the delimiter character,
-   // whichever comes first (skipping leading white space characters but accpting
-   // spaces in the cString)
-   void read(char* cString, unsigned int maxSize, char delimiter) {
-      char ch=0;
-      unsigned int i=0;
-       // skipping leading white space chars
-      do {   
-         cin.get(ch); // reads one character from input
-      } while (isSpace(ch));
-      // read char by char util hitting delimiter or maxSize
-      for (i = 0; i < maxSize && ch != delimiter;i++) {
-         cString[i] = ch;
-         // read the cString stopping at the size limit
-         if (i < maxSize-1) cin.get(ch); 
-      }       
-      cString[i] = 0; // make sure the cString is null terminated
-   }
+Declare and implement the following member functions.
+
+The member function set( ):
+     ```void set(const char*, int, double);```
+It uses three input parameters to initialize a Train object. It receives the name of the train, the number of people on the train and the speed of the train. It validates the data values received and uses these data values to set the respective data members, only if all of them are valid. 
+            
+All the data values are valid if a) the first parameter is not nullptr and the length of the name is greater than zero, b) the number of people is between zero and MAX_PEOPLE (inclusive), and c) the speed is between zero and MAX_SPEED (inclusive). You must use strncpy() to copy the first MAX_NAME_LENGTH characters from the input parameter to the data member that holds the name of a train.
+
+If the data values are invalid, the member function initializes the Train object to a safe empty state. You may use your own definition of a safe empty state. However, you must document your definition as comments. Otherwise you will lose marks.
+
+The member function getNumberOfPeople:
+    ```int getNumberOfPeople() const;```
+This query returns the  number of people on a train.
+
+The member function getName: 
+   ``` const char* getName() const; ```
+This query returns the name of a train.
+
+The member function getSpeed:
+    ```double getSpeed() const;```
+This query returns the speed of a train.
+   
+The member function isSafeEmpty: 
+     ```bool isSafeEmpty() const;```
+This query returns true if the Train object is in a safe empty state; false otherwise.
+
+The member function display: 
+    ```void display() const;```
+This member function sends the information about a Train to standard output in the following format if the object holds valid data values.
 ```
-In the prototype of the function provide a new line (```'\n'```) character as a default value for the third parameter (the delimiter). Therefore if the function is called with two parameters, the delimiter will be the new line character by default.
-
-#### Usage example
-```C++
-   char name[51];
-   cout << "Please enter your name: ";
-   read(name, 50);
-   cout << "Hello " << name <<"!" << endl;
+NAME OF THE TRAIN : XXXXXXXXXXX<ENDL>
+NUMBER OF PEOPLE  : XXXX<ENDL>
+SPEED             : XXXX.XX km/h<ENDL>
 ```
-Execution:  
-```Text
-Please entere your name: Fred Al Soley<ENTER>
-Hello Fred Al Soley!
+If the object is in a safe empty state, the function displays the following message:
+```Safe Empty State!```
+
+## Testing Program
 ```
-### Implementation
-
-#### Car
-
-Create a module called ```Car```.
-
-In the module, create a structure called ```Car``` to hold the following information for a passing Car.
-
-- License Plate of the Car; a Character cString capable of holding a maximum of 8 characters (8+1 for null byte)
-- **Make and model** of the Car; a character pointer to hold the **make and model** of the car dynamically as a cString.<br /> 
-    >Although a "make and model" of a Car is not typically more than 60 characters, to conserve memory, after reading the make and model in a local cString of 60 characters(function scope), we will store it in a dynamically allocated memory to the same size of the entry.
-- Time; kept in an integer in military format (ie. **30** is 0:30 AM and **1325** is 1:25 PM)
-
-Have this structure in ```Car.h```
-
-#### Dynamic Array of Cars
-
-In ```Car.cpp``` create a pointer to a Car structure. 
-
-This pointer will hold a dynamic array of Car structures with an initial size (that we call **allocation size**). As cars pass the border the elements of the dynamic array will be set to the information of the car until the array is full. In this case, a new array of dynamic cars with more memory will be allocated (the old size + allocation size) to replace the old array.   
-
-#### End of the day report
-The execution of the programs starts at 0:01 in the morning and ends at midnight. 
-
-When the program ends, a time-stamped report will be generated for all the cars that passed the border that day.
-Before the program ends all the memory allocated during execution will be deallocated (deleted);
-
-### Function implementation:
-#### File scoped variables
-Create the following four variables in ```Car.cpp``` to be used for memory management and tracking:
-- **Car Pointer**; A Car pointer to hold the dynamic array of cars (We call this **"The Car Pointer"** in this text)
-- **Allocation size**; an integer to hold the memory allocation and expansion size when needed
-    >When testing you set this to be a small number (like 2) so you can easily test your memory resizing.
-- Number of Cars; an integer to hold the number of cars currently in the dynamic array of cars pointed by ```The Car Pointer```
-- **Car Array Size**; an integer to hold the current allocation size of the array. This value is the maximum size that the **Number Of Cars** can grow up to (before reallocation for expansion). 
-
-#### ```void VBPLE_Title();```
-Prints the following message:  
-```Text
-Vehicle Border Passing Log Entry
-Enter the data in the following format:
-Make and model,LicensePlate,MilitaryTime<ENTER>
-Exit the program by entering the following:
-X,<ENTER>
-```
-and goes to new line.
-
-#### ```void initialize(int allocSize);```
-Initializes [the four Car.cpp](#file-scoped-variables) variables as follows:
-- sets the ```number of cars``` to zero
-- sets the ```Car Array Size``` and the ```Allocation Size``` to the argument **allocSize**
-- dynamically allocates an array of Cars to the size of ```Allocation Size``` and keeps the address in ```The Car Pointer```
-
-####   ```void deallocate(Car& C);```
-Deletes the allocated memory pointed by the ```make and model``` pointer in the ``Car`` structure, then set it to ```nullptr```.
-
-#### ```bool read(Car& C);```
-Overload the Read Function:<br />
-Read the information of a car passing the border in a comma-separated format from the console and dynamically hold the **make an model** in the ```make and model``` pointer of the Car structure. Return true if a Car is read from the console or return false if "X," is entered instead.
-
-No validation is done by this function on the data.
-
-- create a boolean flag and set it to false
-- create a local cString to hold 60 Characters to read the **make and model**
-- call the cStrTools ```read``` function to read the make and model up to 60 characters or the comma character **(',')**;
-- if the make and model is not equal to "X" then 
-    - set the boolean flag to true
-    - allocate a dynamic array of characters pointed by the ```make and model ``` of the Car structure to the size of the make and model red from the console (plus the null byte) and copy the make and model into it.
-    - read the license plate up to 8 characters or up to the comma character **(',')**;
-    - read the integer value and store it in the time variable of the Car structure.
-- return the boolean flag.
-
-#### ```void print(const Car& C);```
-print the car in the following format:
-```Time: Make and model, license plate<NEWLINE```
-
-#### ```void record(const Car& C);```
-Records the passage of a car by adding its information to the [Car Array](#file-scoped-variables) as follows:
-
-- if the [number of cars](#file-scoped-variables) is equal to the size of the [Car Array](#file-scoped-variables) it means that the  [Car Array](#file-scoped-variables) is full, we have to enlarge it to make room for more entry
-    - in a temporary local car pointer dynamically allocate an array of cars to the size of ```the car array + the allocation size```.
-    - copy all the cars from the old array to the new array (but do not deallocate the individual old cars since their make and model in memory are now pointed by the cars in the new array)
-    - delete the old car array by deleting ```The Car Pointer```
-    - set ```The Car Pointer``` to the value of the temporary local car pointer
-    - update the carr array size to the new size
-- copy the ```car argument``` after the last occupied element of the car array pointed by ```The Car Pointer``` and add one to the ```number of cars```.
-
-See the illustration bellow:   
-- [HTML](lab/ResizingCarArray.md)
-- [PDF](lab/ResizingCarArray.pdf) 
-- [Power point](lab/ResizingCarArray.pptx)
-
-#### ```void endOfDay()``` 
-This function is called at the end of the program.
-
-- The function will go through all the elements of the car array pointed by ```The Car Pointer``` and prints them using the print function and then deallocates the printed Car to make sure there is no memory leak. (using the deallocate function)
-- then it will delete the car array pointed by ```The Car Pointer``` and sets it to ```nullptr```.
-
-
-## Tester Program
-```C++
-/* ------------------------------------------------------
-Workshop 2 part 1
-Module: N/A
-Filename: main.cpp
-Version 1
-Author	Fardad Soleimanloo
-Revision History
------------------------------------------------------------
-Date       Reason
------------------------------------------------------------*/
-#include "Car.h"
+#include <iostream>
+#include <cstring>
+#include <iomanip>
+using namespace std;
+#include "Train.h"
 using namespace sdds;
 
-int main(){
-   Car C;
-   VBPLE_Title();
-   // the value "2" is passed to make testing easier
-   // in the tester program on submission it will be set to higher value
-   initialize(2);
-   while (read(C)) {
-      record(C);
-   }
-   endOfDay();
+int main() {
+
+	Train trains[7];
+
+	trains[0].set(nullptr, 100, 123.55);;
+	trains[1].set("", 100, 123.55);
+	trains[2].set("VIA Rail Abitibi", -100, 123.45);
+	trains[3].set("VIA Rail Abitibi", 100, -123.45);
+	trains[4].set("VIA Rail Abitibi", 100, 5000);
+	trains[5].set("Seneca Express", -1, -1);
+	trains[6].set("VIA Rail Abitibi", 333, 115.95);
+
+	cout << "----------------------------------------" << endl;
+	cout << "1. Testing the validation logic." << endl;
+	cout << "(only trains[6] should be valid)" << endl;
+	cout << "----------------------------------------" << endl;
+	for (int i = 0; i < 7; ++i)
+	{
+		cout << "trains[" << i << "]: "
+			<< (trains[i].isSafeEmpty() ? "not valid" : "valid") << endl;
+	}
+	cout << "----------------------------------------" << endl << endl;
+
+	//
+	cout << "----------------------------------------" << endl;
+	cout << "2. Testing the display function." << endl;
+	cout << "----------------------------------------" << endl;
+	for (int i = 0; i < 7; ++i)
+	{
+		trains[i].display();
+	}
+	cout << "----------------------------------------" << endl << endl;
+
+	cout << "----------------------------------------" << endl;
+	cout << "3. Testing the member functions." << endl;
+	cout << "----------------------------------------" << endl;
+
+	Train t2;
+
+	t2.set("Bullet Train", 100, 245.95);
+
+	cout << t2.getNumberOfPeople()
+		 << ','
+		 << t2.getName()
+		 << ','
+		 << t2.getSpeed() << endl;
+	cout << "----------------------------------------" << endl << endl;
+
+	return 0;
 }
-```
-## Execution Sample
-
-```Text
-Vehicle Border Passing Log Entry
-Enter the data in the following format:
-Make and model,LicensePlate,MilitaryTime<ENTER>
-Exit the program by entering the following:
-X,<ENTER>
-Toyota C-HR,VYEEDG,0001
-Alfa Romeo Giulia,OVQXIQ,0004
-Buick Encore GX,ZIQSUF,0007
-Jeep Gladiator,YFQOSQ,1010
-Chevrolet Impala,MWPBNW,1013
-Volkswagen Atlas Cross Sport,ESIJDW,1116
-Toyota Prius Prime,AECYJV,1319
-Lexus RZ,QONGCT,1622
-Tesla Model S,MCGSVD,2225
-X,
-1: Toyota C-HR,VYEEDG
-4: Alfa Romeo Giulia,OVQXIQ
-7: Buick Encore GX,ZIQSUF
-1010: Jeep Gladiator,YFQOSQ
-1013: Chevrolet Impala,MWPBNW
-1116: Volkswagen Atlas Cross Sport,ESIJDW
-1319: Toyota Prius Prime,AECYJV
-1622: Lexus RZ,QONGCT
-2225: Tesla Model S,MCGSVD
-
-```
-### Data Entry
-
-```Text
-Copy and paste all the lines into the terminal instead of typing them.
-Pasting in the terminal is usually done only by right clicking the mouse.
-
-Toyota C-HR,VYEEDG,0001
-Alfa Romeo Giulia,OVQXIQ,0004
-Buick Encore GX,ZIQSUF,0007
-Jeep Gladiator,YFQOSQ,1010
-Chevrolet Impala,MWPBNW,1013
-Volkswagen Atlas Cross Sport,ESIJDW,1116
-Toyota Prius Prime,AECYJV,1319
-Lexus RZ,QONGCT,1622
-Tesla Model S,MCGSVD,2225
-X,
-
+ 
 ```
 
-## PART 1 Submission (lab)
+## Sample Output
+```
+----------------------------------------
+1. Testing the validation logic.
+(only trains[6] should be valid)
+----------------------------------------
+trains[0]: not valid
+trains[1]: not valid
+trains[2]: not valid
+trains[3]: not valid
+trains[4]: not valid
+trains[5]: not valid
+trains[6]: valid
+----------------------------------------
 
-When submitting your code, the main file ["main_prof.cpp"](lab/main_prof.cpp) will be used to test your program with a much larger [set of data](lab/car.csv). To make the data entry easier the data will be redirected to the workshop executable as ```ws < car.csv```.  By doing this the student does not need to enter the information manually.
+----------------------------------------
+2. Testing the display function.
+----------------------------------------
+Safe Empty State!
+Safe Empty State!
+Safe Empty State!
+Safe Empty State!
+Safe Empty State!
+Safe Empty State!
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 333
+SPEED             : 115.95 km/h
+----------------------------------------
 
-Read the comments in ["main_prof.cpp"](lab/main_prof.cpp) to see the details.
+----------------------------------------
+3. Testing the member functions.
+----------------------------------------
+100,Bullet Train,245.95
+----------------------------------------
+
+```
+## PART 1 Submission 
 
 ### Files to submit:  
 
 ```Text
-cStrTools.cpp
-cStrTools.h
-Car.cpp
-Car.h
-main.cpp
+Train.h
+Train.cpp
+w3_part1_Tester.cpp
+
 ```
-
-### Submission Process:
-
-
-Upload your the files listed above to your `matrix` account. Compile and run your code using the `g++` compiler as shown in [Compiling and Testing Your Program](#compiling-and-testing-your-program) and make sure that everything works properly.
+Upload your source code and data file to your `matrix` account. Compile and run your code using the `g++` compiler as the execution sample above and make sure that everything works properly.
 
 Then, run the following command from your account
 - replace `profname.proflastname` with your professor’s Seneca userid
 - replace **??** with your subject code (2**00** or 2**44**)
 - replace **#** with the workshop number
 - replace **X** with the workshop part number (**1** or **2**) 
+
 ```text
 ~profname.proflastname/submit 2??/w#/pX
 ```
@@ -326,136 +253,151 @@ and follow the instructions.
 
 > **⚠️Important:** Please note that a successful submission does not guarantee full credit for this workshop. If the professor is not satisfied with your implementation, your professor may ask you to resubmit. Re-submissions will attract a penalty.
 
+## Part 2: DIY
+Declare and implement two member functions and a global function that will change the state of a Train object. These functions will NOT change the state of a Train object if it is in a safe empty state. Note: Review the testing program and the sample output in order to understand the behaviour of these three functions. 
 
-# DIY (50%) 
+The member function ```loadPeople``` changes the number of people on a train. The value of the input parameter is used to increase or decrease the number of people on  a train. It must make sure that the number of people will not be negative or exceed MAX_PEOPLE. It returns true if the operation succeeds. It returns false if the Train object is in a safe empty state.
 
-A research lab requires an application to go through thousands of DNA samples and find all the matches to their sample. 
+The member function ```changeSpeed``` changes the speed of a train. The value of the input parameter is used to increase or decrease the speed of  a train. It must make sure that the speed of a train will not be negative or exceed MAX_SPEED. It returns true if the operation succeeds. It returns false if the Train object is in a safe empty state.
 
-A DNA strand representation is done through combinations of the characters 'a', 'c', 'g' and 't' with no spaces in between. These combinations are kept as a cString of characters in a comma-separated file with a 6 digit integer id attached to each sample as follows:
+A global function ```transfer``` moves as many passengers as possible from the second Train to the first Train. It has two parameters (first, second) that reference two Train objects. The function must make sure that the number of people on both Train objects will not be negative or exceed MAX_PEOPLE. It returns the number of people that have been moved to the first Train. It returns -1 if any of the Train objects is in a safe empty state. 
 
-
-```Text
-243245,acccgttcgattcagtcgatcgatcgggatattgcaaa<NEWLINE>
+## Testing Program
 ```
-
-Each DNA strand is between 100 to 1000 characters. 
-
-The number of DNA strands in the data file could be millions. This amount is different in each data file.
-
-Your responsibility is to write a library of functions in a module called "DNA" that can support the main program provided to have the following execution outcome:
-
-The ids in the file are not sorted. Your search results must be sorted based on the Ids of the DNA strands in ascending order:
-
-
-```Text
-Enter DNA data file name: lowBaseDnaSmall.csv
-DNA search program
-Enter a DNA squence (max 100 chars)
-> gtcc
-4 matches found:
-1) 444136:
-atattttccactgaacggtccagatcgacgatcggggtgtaacagttcatctttggtataccctctccggcgttagatatggtcgaaacgggaacggctag
-======================================================================
-2) 448885:
-ctgatgcagatggattgcgataacggagcgcaatgtgcaatacgggccttcgggaaacggctcgtccgtttcccgaacgcggaacgcaaagaacatgaca
-======================================================================
-3) 469926:
-cggaccacggcccccgtcccccgcatgttcgacgagtggatagagttgagatccatccctttcctagcgtcattgttgcgatacgattgtagtgagcagct
-======================================================================
-4) 489349:
-ccccttttaccaaatcgaagcttttgtgcgaatgtggtcttattgtacgtccgtctcacaggtgactcacactgtccgctctactgagaagcctcctatgc
-======================================================================
-Enter a DNA squence (max 100 chars)
-> gtacct
-No match found!
-Enter a DNA squence (max 100 chars)
-> !
-DNA Search Program Closed.
-
-```
-
-
-## Tester Program
-```C++
-/* ------------------------------------------------------
-Workshop 2 part 2
-Module: N/A
-Filename: main.cpp
-Version 1
-Author	Fardad Soleimanloo
-Revision History
------------------------------------------------------------
-Date       Reason
------------------------------------------------------------*/
 #include <iostream>
-#include "cStrTools.h"
-#include "DNA.h"
+#include <cstring>
+#include <iomanip>
 using namespace std;
-using namespace sdds;
+#include "Train.h"
+using namespace seneca;
+
 int main() {
-   bool done = false;
-   char dna[101];
-   char filename[256];
-   cout << "Enter DNA data file name: ";
-   cin >> filename;
-   if (beginSearch(filename)) {
-      while (!done) {
-         cout << "Enter a DNA squence (max 100 chars)" << endl << "> ";
-         read(dna, 100);
-         if (strCmp(dna, "!") == 0) {
-            done = true;
-         }
-         else {
-            if (read(dna)) {
-               sort();
-               displayMatches();
-               deallocate();
-            }
-            else {
-               cout << "No match found!" << endl;
-            }
-         }
-      }
-      endSearch();
-   }
-   return 0;
+	Train trains[3];
+
+	trains[1].set("Bullet Train", 100, 245.95);
+	trains[2].set("VIA Rail Abitibi", 250, 115.95);
+	trains[0] = trains[1];  // Watch out!
+
+	cout << "----------------------------------------" << endl;
+	cout << "1. Testing changeSpeed." << endl;
+	cout << "----------------------------------------" << endl;
+
+	trains[1].changeSpeed(15);
+	trains[2].changeSpeed(-30);
+	trains[1].display();
+	trains[2].display();
+
+	trains[1].changeSpeed(500);
+	trains[2].changeSpeed(-600);
+	trains[1].display();
+	trains[2].display();
+
+	cout << "----------------------------------------" << endl << endl;
+
+	cout << "----------------------------------------" << endl;
+	cout << "2. Testing loadPeople." << endl;
+	cout << "----------------------------------------" << endl;
+
+	trains[1].loadPeople(101);
+	trains[2].loadPeople(-55);
+	trains[1].display();
+	trains[2].display();
+
+	trains[1].loadPeople(1500);
+	trains[2].loadPeople(-2000);
+	trains[1].display();
+	trains[2].display();
+
+	cout << "----------------------------------------" << endl << endl;
+
+	cout << "----------------------------------------" << endl;
+	cout << "3. Testing transfer." << endl;
+	cout << "----------------------------------------" << endl;
+
+	transfer(trains[1], trains[2]);
+	trains[1].display();
+	trains[2].display();
+
+	trains[2].loadPeople(955);
+
+	transfer(trains[2], trains[0]);
+	trains[2].display();
+	trains[0].display();  // Watch out!
+
+	cout << "----------------------------------------" << endl << endl;
+
+	cout << "----------------------------------------" << endl;
+	cout << "4. Testing transfer (safe empty states)." << endl;
+	cout << "----------------------------------------" << endl;
+	
+	trains[0].set(nullptr, -1, -1); // safe empty state
+	cout << ( transfer( trains[0], trains[1] ) ) << endl;
+	cout << ( transfer( trains[1], trains[0] ) ) << endl;
+	
+	cout << "----------------------------------------" << endl << endl;
+	return 0;
 }
 ```
-
-## Mandatory Functions
-
-### ```bool beginSearch(const char *filename);```
-It will try to open the file and initialize any requirements needed for the application. Returns true if the file is opened successfully and returns false it fails to open the file.
-
-### ```bool read(const char* subDNA);```
-Dynamically creates an array of DNA records to the number of matches found in the file and stores the matches in them. Returns true if at least one match is found and false if no match is found in the records.
-
-### ```void sort()```
-Sorts the dynamic array of DNA matches found in the file based on the ids in ascending order.
-
-### ```void displayMatches()```
-Displays the dynamic DNA records in the following format.
-
-```Text
-row) ID:
-DNA strand
-======================================================================
+## Sample Output
 ```
+----------------------------------------
+1. Testing changeSpeed.
+----------------------------------------
+NAME OF THE TRAIN : Bullet Train
+NUMBER OF PEOPLE  : 100
+SPEED             : 260.95 km/h
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 250
+SPEED             : 85.95 km/h
+NAME OF THE TRAIN : Bullet Train
+NUMBER OF PEOPLE  : 100
+SPEED             : 320.00 km/h
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 250
+SPEED             : 0.00 km/h
+----------------------------------------
 
-### ```void deallocate()```
-Deallocates all the dynamic memory within the DNA array elements and the DNA array itself.
+----------------------------------------
+2. Testing loadPeople.
+----------------------------------------
+NAME OF THE TRAIN : Bullet Train
+NUMBER OF PEOPLE  : 201
+SPEED             : 320.00 km/h
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 195
+SPEED             : 0.00 km/h
+NAME OF THE TRAIN : Bullet Train
+NUMBER OF PEOPLE  : 1000
+SPEED             : 320.00 km/h
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 0
+SPEED             : 0.00 km/h
+----------------------------------------
 
-### ```void endSearch()```
-Finalizes the program by releasing the resources allocated by the program (like closing the data file and etc...). 
+----------------------------------------
+3. Testing transfer.
+----------------------------------------
+NAME OF THE TRAIN : Bullet Train
+NUMBER OF PEOPLE  : 1000
+SPEED             : 320.00 km/h
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 0
+SPEED             : 0.00 km/h
+NAME OF THE TRAIN : VIA Rail Abitibi
+NUMBER OF PEOPLE  : 1000
+SPEED             : 0.00 km/h
+NAME OF THE TRAIN : Bullet Train
+NUMBER OF PEOPLE  : 55
+SPEED             : 245.95 km/h
+----------------------------------------
 
-And then Prints:  
-```Text
-DNA Search Program Closed.
+----------------------------------------
+4. Testing transfer (safe empty states).
+----------------------------------------
+-1
+-1
+----------------------------------------
 ```
-
-## Execution Sample
-[Sample execution on `dna.csv` file](DIY/ExecutionSample.md)
-
 ## Reflection
 
 Study your final solutions for each deliverable of the workshop, reread the related parts of the course notes, and make sure that you have understood the concepts covered by this workshop.  **This should take no less than 30 minutes of your time and the result is suggested to be at least 150 words in length.**
@@ -464,26 +406,16 @@ Create a file named `reflect.txt` that contains your detailed description of the
 
 You may be asked to talk about your reflection (as a presentation) in class.
 
-## Part 2 Submission (DIY)
-
+## DIY Submission (Part 2)
 ### Files to submit:  
-
-```reflect.txt``` and:
 ```Text
-cStrTools.cpp
-cStrTooos.h
-DNA.cpp
-DNA.h
-main.cpp
+Train.h
+Train.cpp
+w3_part2_Tester.cpp
+reflect.txt
 ```
 
-### Data Entry
-
-Follow the instructions of the submitter program.
-
-## Submission Process:
-
-Upload your the files listed above to your `matrix` account. Compile and run your code using the `g++` compiler as shown in [Compiling and Testing Your Program](#compiling-and-testing-your-program) and make sure that everything works properly.
+Upload your source code and data file to your `matrix` account. Compile and run your code using the `g++` compiler as shown above and make sure that everything works properly.
 
 Then, run the following command from your account
 - replace `profname.proflastname` with your professor’s Seneca userid
@@ -497,3 +429,4 @@ Then, run the following command from your account
 and follow the instructions.
 
 > **⚠️Important:** Please note that a successful submission does not guarantee full credit for this workshop. If the professor is not satisfied with your implementation, your professor may ask you to resubmit. Re-submissions will attract a penalty.
+
