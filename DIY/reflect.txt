@@ -1,0 +1,21 @@
+/*****************************************************************************
+//<assessment name example : Workshop - #2 (Part - 2)>
+//  Full Name : Taehwa Hong
+//  Student ID# : 132546227
+//	Email : thong14@myseneca.ca
+//	Section : OOP244 NBB
+//	Authenticity Declaration :
+//I declare this submission is the result of my own work and has not been
+//shared with any other student or 3rd party content provider.This submitted
+//piece of work is entirely of my own creation.
+*****************************************************************************/
+
+I learned about dynamic memory allocation and dynamic memory release while doing this workshop 2 part 1 and part 2. 
+Dynamic memory means allocating memory space to be used while a program is being executed. 
+After the program ends, the memory allocated for the operating system to use can be returned, and if requested, it can be reallocated. 
+By allocating dynamic memory, you can allocate as much memory as you want depending on the situation and adjust the size even if it is already allocated. 
+In addition, dynamic memory allocation must be released when the allocated memory is not in use. 
+If dynamic memory allocation is not released, it may cause memory leakage. 
+If a memory leak occurs, the pointer to the dynamic memory may be out of range before the program releases the corresponding memory. 
+The pointer to dynamic memory changes the value before the application cancels memory allocation, 
+starting with the address stored in that pointer.
